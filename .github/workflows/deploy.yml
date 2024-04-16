@@ -23,11 +23,14 @@ jobs:
         inlineScript: |
          az account show
       
-    # - name: Get Function App Publish Profile
-    #   id: get-publish-profile
-    #   run: |
-    #     profile=$(az functionapp deployment list-publishing-profiles --name acme-test-function-app --resource-group acme-test-resource-group --query "[?publishMethod=='FTP'].{url: publishingUserName, username: publishUrl}" --output tsv)
-    #     echo "::set-output name=profile::$profile"
+    - name: Get Function App Publish Profile
+      uses: azure/CLI@v1
+      id: get-publish-profile
+      with:
+        azcliversion: latest
+        inlineScript: |
+          profile=$(az functionapp deployment list-publishing-profiles --name acme-test-function-app --resource-group acme-test-resource-group --query "[?publishMethod=='FTP'].{url: publishingUserName, username: publishUrl}" --output tsv)
+          echo "::set-output name=profile::$profile"
       
     # - name: Deploy to Azure Function App
     #   uses: azure/webapps-deploy@v2
