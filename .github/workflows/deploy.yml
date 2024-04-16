@@ -1,0 +1,30 @@
+name: Azure Function App Deployment
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Install Azure CLI
+      uses: azure/setup-azure-cli@v1
+      
+    - name: Login to Azure
+      run: az login --service-principal -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }} --tenant ${{ secrets.AZURE_TENANT_ID }}
+      
+    - name: Get Function App Publish Profile
+      id: get-publish-profile
+      run: |
+        profile=$(az functionapp deployment list-publishing-profiles --name acme-test-function-app --resource-group acme-test-resource-group --query "[?publishMethod=='FTP'].{url: publishingUserName, username: publishUrl}" --output tsv)
+        echo "::set-output name=profile::$profile"
+      
+    - name: Deploy to Azure Function App
+      uses: azure/webapps-deploy@v2
+      with:
+        app-name: acme-test-function-app
+        publish-profile: ${{ steps.get-publish-profile.outputs.profile }}
