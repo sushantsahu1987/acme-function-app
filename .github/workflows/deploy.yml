@@ -1,59 +1,12 @@
-# name: Azure Function App Deployment
-
-# on:
-#   workflow_dispatch:
-
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-    
-#     steps:
-#     - name: Checkout repository
-#       uses: actions/checkout@v2
-      
-#     - name: Azure login
-#       uses: azure/login@v2
-#       with:
-#         creds: ${{ secrets.AZURE_CREDENTIALS}}
-    
-#     - name: Azure CLI script
-#       uses: azure/CLI@v1
-#       with:
-#         azcliversion: latest
-#         inlineScript: |
-#          az account show
-      
-#     - name: Get Function App Publish Profile
-#       uses: azure/CLI@v1
-#       id: get-publish-profile
-#       with:
-#         azcliversion: latest
-#         inlineScript: |
-#           profile=$(az functionapp deployment list-publishing-profiles --name acme-test-function-app --resource-group acme-test-resource-group --query "[?publishMethod=='FTP'].{url: publishingUserName, username: publishUrl}" --output tsv)          
-#           echo "::set-output name=profile::$profile"
-      
-#     - name: Deploy to Azure Function App
-#       uses: Azure/functions-action@v1
-#       with:
-#         app-name: acme-test-function-app
-#         publish-profile: ${{ secrets.TEST_PUBLISH_PROFILE }}
-
 name: Azure Function App Deployment
 
 on:
   workflow_dispatch:
 
-# CONFIGURATION
-# For help, go to https://github.com/Azure/Actions
-#
-# 1. Set up the following secrets in your repository:
-#   AZURE_FUNCTIONAPP_PUBLISH_PROFILE
-#
-# 2. Change these variables for your configuration:
 env:
-  AZURE_FUNCTIONAPP_NAME: 'acme-test-function-app'   # set this to your function app name on Azure
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'       # set this to the path to your function app project, defaults to the repository root
-  NODE_VERSION: '20.x'                      # set this to the node version to use (e.g. '8.x', '10.x', '12.x')
+  AZURE_FUNCTIONAPP_NAME: 'acme-test-function-app'   
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.'       
+  NODE_VERSION: '20.x'                      
 
 jobs:
   build-and-deploy:
@@ -98,5 +51,3 @@ jobs:
         app-name: ${{ env.AZURE_FUNCTIONAPP_NAME }}
         package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
         publish-profile: ${{ steps.get-publish-profile.outputs.profile }}
-
-# For more samples to get started with GitHub Action workflows to deploy to Azure, refer to https://github.com/Azure/actions-workflow-samples
